@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c:*)",
+      "Bash(npm install:*)",
+      "Bash(npx react-scripts build:*)",
+      "Bash(find /p/syngene-google-analytics/chatbot -type f -name *)"
+    ]
+  }
+}

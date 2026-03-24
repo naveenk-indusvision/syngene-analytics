@@ -1,0 +1,11 @@
+# LangGraph + LangChain. Top-level "langchain" package is optional; langchain-core is required by langchain-openai.
+# Install: pip install langgraph langchain-openai google-analytics-data
+langchain-core>=0.2.0
+langchain-openai>=0.2.0
+langgraph>=0.2.0
+google-analytics-data>=0.18.0
+google-auth>=2.25.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0

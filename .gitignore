@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Secrets & credentials
+backend/.env
+chatbot/.env
+backend/syngene-analytics-b355cfb499e1.json
+chatbot/__pycache__/
+chatbot/temp_ga4_data.json
