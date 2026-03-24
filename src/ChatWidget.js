@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
+  XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 
 const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
@@ -184,7 +184,7 @@ function ChatWidget() {
   const [loading, setLoading] = useState(false);
   const [quickActionResult, setQuickActionResult] = useState(null);
   const [quickActionLoading, setQuickActionLoading] = useState(false);
-  const [recentInsights, setRecentInsights] = useState(() => loadRecentInsights());
+  const [, setRecentInsights] = useState(() => loadRecentInsights());
   const [analyticsData, setAnalyticsData] = useState(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [blogData, setBlogData] = useState(null);
