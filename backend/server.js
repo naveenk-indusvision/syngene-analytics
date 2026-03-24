@@ -36,6 +36,11 @@ if (process.env.GOOGLE_CREDENTIALS_JSON && !process.env.GOOGLE_APPLICATION_CREDE
 
 const client = new BetaAnalyticsDataClient();
 
+// Keep chatbot warm by pinging its health endpoint every 5 minutes
+setInterval(() => {
+  fetch(`${CHAT_API_URL}/health`).catch(() => {});
+}, 5 * 60 * 1000);
+
 // CONTAINS = 4 for GA4 dimension string filter
 const CONTAINS = (protos.google.analytics.data.v1beta.Filter.StringFilter.MatchType && protos.google.analytics.data.v1beta.Filter.StringFilter.MatchType.CONTAINS) || 4;
 
