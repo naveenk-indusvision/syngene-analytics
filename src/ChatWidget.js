@@ -7,7 +7,9 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts';
 
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:3001';
+// Use ?? (not ||) so an explicit empty string ("" → same-origin) doesn't fall
+// back to the localhost dev URL. The DO build sets REACT_APP_API_BASE="".
+const API_BASE = process.env.REACT_APP_API_BASE ?? 'http://localhost:3001';
 
 const DEFAULT_SUGGESTED_QUESTIONS = [
   'What are my top pages by traffic?',
