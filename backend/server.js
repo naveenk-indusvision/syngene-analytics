@@ -46,6 +46,11 @@ setInterval(() => {
 // CONTAINS = 4 for GA4 dimension string filter
 const CONTAINS = (protos.google.analytics.data.v1beta.Filter.StringFilter.MatchType && protos.google.analytics.data.v1beta.Filter.StringFilter.MatchType.CONTAINS) || 4;
 
+// Liveness probe — fast, no upstream calls. Used by DO App Platform health checks.
+app.get('/health', (req, res) => {
+  res.json({ ok: true, gcp: !!process.env.GOOGLE_APPLICATION_CREDENTIALS, ga4: !!process.env.GA4_PROPERTY_ID });
+});
+
 // Comprehensive analytics endpoint with all key metrics
 app.get('/api/analytics', async (req, res) => {
   try {

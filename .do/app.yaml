@@ -54,9 +54,9 @@ services:
     instance_count: 1
     http_port: 3001
     health_check:
-      http_path: /api/analytics
-      initial_delay_seconds: 30
-      period_seconds: 60
+      http_path: /health
+      initial_delay_seconds: 15
+      period_seconds: 30
       failure_threshold: 5
     envs:
       - key: NODE_ENV
