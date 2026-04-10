@@ -32,6 +32,12 @@ static_sites:
       - key: REACT_APP_API_BASE
         scope: BUILD_TIME
         value: ""
+      # Force `npm install` instead of strict `npm ci`. The lockfile is missing
+      # entries for darwin-only optional deps (fsevents) because it was
+      # generated on Windows; `npm ci` rejects this, `npm install` tolerates it.
+      - key: USE_NPM_INSTALL
+        scope: BUILD_TIME
+        value: "true"
 
 # ---------- Backend (Node/Express) and Chatbot (Python/FastAPI) ----------
 services:
