@@ -1,6 +1,21 @@
 name: syngene-analytics
 region: nyc
 
+# Explicit ingress routing — /api/* → backend, everything else → frontend.
+# Same-origin means no CORS needed and the React app can use relative URLs.
+ingress:
+  rules:
+    - match:
+        path:
+          prefix: /api
+      component:
+        name: backend
+    - match:
+        path:
+          prefix: /
+      component:
+        name: frontend
+
 # ---------- Frontend (React static site) ----------
 static_sites:
   - name: frontend
@@ -13,9 +28,10 @@ static_sites:
     output_dir: build
     catchall_document: index.html
     envs:
+      # Empty → axios calls become same-origin (e.g. "/api/chat")
       - key: REACT_APP_API_BASE
         scope: BUILD_TIME
-        value: ${backend.PUBLIC_URL}
+        value: ""
 
 # ---------- Backend (Node/Express) and Chatbot (Python/FastAPI) ----------
 services:
@@ -51,10 +67,13 @@ services:
       - key: CHAT_API_URL
         scope: RUN_TIME
         value: ${chatbot.PRIVATE_URL}
+      # Same-origin in prod, so CORS is unused — set to "*" as a no-op safety net
       - key: CORS_ORIGIN
         scope: RUN_TIME
-        value: ${frontend.PUBLIC_URL}
+        value: "*"
 
+  # chatbot has no ingress entry → not exposed publicly, only reachable
+  # from `backend` via ${chatbot.PRIVATE_URL} on the internal VPC.
   - name: chatbot
     source_dir: /chatbot
     github:
@@ -63,10 +82,11 @@ services:
       deploy_on_push: true
     environment_slug: python
     build_command: pip install -r requirements.txt
-    run_command: uvicorn api:app --host 0.0.0.0 --port $PORT
+    run_command: uvicorn api:app --host 0.0.0.0 --port 8080
     instance_size_slug: basic-xxs
     instance_count: 1
-    http_port: 8080
+    internal_ports:
+      - 8080
     health_check:
       http_path: /health
       initial_delay_seconds: 30
@@ -86,4 +106,4 @@ services:
         type: SECRET
       - key: CORS_ORIGINS
         scope: RUN_TIME
-        value: ${frontend.PUBLIC_URL}
+        value: "*"
