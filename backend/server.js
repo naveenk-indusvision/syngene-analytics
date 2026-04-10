@@ -25,6 +25,7 @@ app.use((req, res, next) => {
 });
 
 // Load GCP credentials from env var (for deployment) or file (for local dev)
+log(`GCP env check: GOOGLE_CREDENTIALS_JSON len=${(process.env.GOOGLE_CREDENTIALS_JSON || '').length}, GOOGLE_APPLICATION_CREDENTIALS=${process.env.GOOGLE_APPLICATION_CREDENTIALS || '(unset)'}`);
 if (process.env.GOOGLE_CREDENTIALS_JSON && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   const fs = require('fs');
   const os = require('os');
@@ -32,6 +33,7 @@ if (process.env.GOOGLE_CREDENTIALS_JSON && !process.env.GOOGLE_APPLICATION_CREDE
   const tmpFile = path.join(os.tmpdir(), 'gcp-credentials.json');
   fs.writeFileSync(tmpFile, process.env.GOOGLE_CREDENTIALS_JSON);
   process.env.GOOGLE_APPLICATION_CREDENTIALS = tmpFile;
+  log(`Wrote GCP credentials to ${tmpFile} (${process.env.GOOGLE_CREDENTIALS_JSON.length} bytes)`);
 }
 
 const client = new BetaAnalyticsDataClient();
