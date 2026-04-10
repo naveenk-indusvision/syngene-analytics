@@ -1,0 +1,89 @@
+name: syngene-analytics
+region: nyc
+
+# ---------- Frontend (React static site) ----------
+static_sites:
+  - name: frontend
+    source_dir: /
+    github:
+      repo: naveenk-indusvision/syngene-analytics
+      branch: main
+      deploy_on_push: true
+    build_command: npm run build
+    output_dir: build
+    catchall_document: index.html
+    envs:
+      - key: REACT_APP_API_BASE
+        scope: BUILD_TIME
+        value: ${backend.PUBLIC_URL}
+
+# ---------- Backend (Node/Express) and Chatbot (Python/FastAPI) ----------
+services:
+  - name: backend
+    source_dir: /backend
+    github:
+      repo: naveenk-indusvision/syngene-analytics
+      branch: main
+      deploy_on_push: true
+    environment_slug: node-js
+    build_command: npm install
+    run_command: node server.js
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 3001
+    health_check:
+      http_path: /api/analytics
+      initial_delay_seconds: 30
+      period_seconds: 60
+      failure_threshold: 5
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: GA4_PROPERTY_ID
+        scope: RUN_TIME
+        type: SECRET
+      - key: GOOGLE_CREDENTIALS_JSON
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: CHAT_API_URL
+        scope: RUN_TIME
+        value: ${chatbot.PRIVATE_URL}
+      - key: CORS_ORIGIN
+        scope: RUN_TIME
+        value: ${frontend.PUBLIC_URL}
+
+  - name: chatbot
+    source_dir: /chatbot
+    github:
+      repo: naveenk-indusvision/syngene-analytics
+      branch: main
+      deploy_on_push: true
+    environment_slug: python
+    build_command: pip install -r requirements.txt
+    run_command: uvicorn api:app --host 0.0.0.0 --port $PORT
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 60
+      failure_threshold: 5
+    envs:
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: OPENAI_CHAT_MODEL
+        value: gpt-4o
+      - key: GA4_PROPERTY_ID
+        scope: RUN_TIME
+        type: SECRET
+      - key: GOOGLE_CREDENTIALS_JSON
+        scope: RUN_TIME
+        type: SECRET
+      - key: CORS_ORIGINS
+        scope: RUN_TIME
+        value: ${frontend.PUBLIC_URL}
